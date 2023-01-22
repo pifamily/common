@@ -1,0 +1,23 @@
+---
+# tasks file for common
+  - name: Uprades
+    apt:
+      update_cache: true
+      upgrade: true
+    become: true
+  - name: Installs
+    apt:
+      pkg:
+      - git
+    become: true
+  - name: Update resolv (DNS server)
+    template:
+      src: resolv.j2.conf
+      dest: /etc/resolv.conf
+    become: true
+  - name: Set global git mail
+    shell:
+      cmd: 'git config --global user.email "{{ git_mail }}"'
+  - name: Set global git name
+    shell:
+      cmd: 'git config --global user.name "{{ git_name }}"'

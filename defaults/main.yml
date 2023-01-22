@@ -1,0 +1,4 @@
+---
+# defaults file for common
+dns_server: 8.8.8.8
+names_for_lookup_check: ['heise.de','google.com']
