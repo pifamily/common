@@ -5,16 +5,47 @@
       update_cache: true
       upgrade: true
     become: true
+    tags: ['update']
   - name: Installs
     apt:
       pkg:
       - git
+      - podman
     become: true
-  - name: Update resolv (DNS server)
+  - name: Update dhcpcd.conf (DNS server)
     template:
-      src: resolv.j2.conf
-      dest: /etc/resolv.conf
+      src: dhcpcd.j2.conf
+      dest: /etc/dhcpcd.conf
     become: true
+    tags: ['update','dns']
+  - name: Restart dhcpcd service
+    shell:
+      cmd: service dhcpcd restart
+    become: true
+    tags: ['update','dns']
+  - name: Make sure directory exits
+    file:
+      path: /etc/rancher/k3s/
+      state: directory
+    become: true
+  - name: Update k3s registries
+    template:
+      src: registries.j2.conf
+      dest: /etc/rancher/k3s/registries.yaml
+    become: true
+    tags: ['update','dns']
+  - name: Restart containerd
+    shell:
+      cmd: sudo systemctl restart k3s
+    become: true
+    tags: ['update','dns']
+    ignore_errors: true
+  - name: Restart containerd
+    shell:
+      cmd: sudo systemctl restart k3s
+    become: true
+    tags: ['update','dns']
+    ignore_errors: true
   - name: Set global git mail
     shell:
       cmd: 'git config --global user.email "{{ git_mail }}"'
